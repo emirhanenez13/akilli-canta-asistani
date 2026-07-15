@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Akıllı Çanta Asistanı</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #A9D6E5; /* açık mavi */
+      --green: #BFE3B4;
+      --green-hover: #A8D49B;
+      --orange: #FFD6A5;
+      --orange-hover: #FFBC70;
+      --white: #FFFFFF;
+      --text: #133046;
+      --muted: #566270;
+      --button-radius: 40px;
+      --card-radius: 25px;
+      --shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: "Poppins", "Quicksand", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:var(--text);
+      background: linear-gradient(180deg, var(--bg) 0%, #DFF3FA 100%);
+    }
+
+    /* background decorative icons */
+    .bg-icons{
+      position:fixed;
+      top:0;left:0;right:0;bottom:0;
+      pointer-events:none;
+      z-index:0;
+      background-image:
+        radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 120px 120px;
+      opacity:0.9;
+    }
+    /* center container */
+    .container{
+      max-width:1100px;
+      margin:40px auto;
+      padding:36px;
+      position:relative;
+      z-index:1;
+    }
+
+    .card{
+      background:transparent;
+      border-radius: var(--card-radius);
+      padding:28px;
+      display:flex;
+      align-items:center;
+      gap:24px;
+      box-sizing:border-box;
+    }
+
+    /* left content */
+    .left{
+      flex:1;
+      min-width:300px;
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:8px;
+    }
+    .logo svg{ width:46px;height:46px; }
+
+    h1{
+      font-size:48px;
+      margin:6px 0;
+      line-height:1;
+      letter-spacing:-0.5px;
+      color:var(--text);
+    }
+
+    p.lead{
+      margin-top:12px;
+      color:var(--muted);
+      max-width:420px;
+      font-size:18px;
+    }
+
+    /* right visual */
+    .visual{
+      width:420px;
+      max-width:45%;
+      position:relative;
+      display:flex;
+      justify-content:center;
+      align-items:flex-end;
+    }
+
+    /* cartoon child card */
+    .character{
+      background:var(--white);
+      border-radius:28px;
+      padding:18px;
+      box-shadow: var(--shadow);
+      width:100%;
+      display:flex;
+      gap:18px;
+      align-items:center;
+    }
+
+    .character-illustration{
+      width:160px;
+      height:160px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      position:relative;
+    }
+
+    /* simple SVG character */
+    .character svg{ width:140px;height:140px; display:block; }
+
+    .speech{
+      background:var(--white);
+      border:3px solid rgba(0,0,0,0.06);
+      padding:16px 18px;
+      border-radius:18px;
+      font-weight:600;
+      font-size:16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+      color:var(--text);
+      max-width:240px;
+      line-height:1.25;
+    }
+
+    .character .shadow{
+      position:absolute;
+      bottom:-12px;
+      left:50%;
+      transform:translateX(-50%);
+      width:60%;
+      height:18px;
+      filter:blur(8px);
+      opacity:0.12;
+      border-radius:50%;
+      background:linear-gradient(90deg, rgba(0,0,0,0.12), rgba(0,0,0,0.06));
+    }
+
+    /* buttons */
+    .actions{
+      margin-top:24px;
+      display:flex;
+      gap:18px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      display:inline-flex;
+      gap:12px;
+      align-items:center;
+      border:none;
+      cursor:pointer;
+      padding:14px 22px;
+      border-radius:var(--button-radius);
+      box-shadow: var(--shadow);
+      font-weight:600;
+      font-size:18px;
+      color:#333;
+      transition: transform 0.28s ease, box-shadow 0.2s ease, background-color 0.18s ease;
+      transform:translateY(0);
+    }
+
+    .btn:focus{ outline:3px solid rgba(0,0,0,0.08); }
+
+    .btn:hover{ transform:translateY(-4px); }
+
+    .btn.green{
+      background:var(--green);
+    }
+    .btn.green:hover{ background:var(--green-hover); }
+
+    .btn.orange{
+      background:var(--orange);
+    }
+    .btn.orange:hover{ background:var(--orange-hover); }
+
+    /* footer wave */
+    .wave-footer{
+      margin-top:28px;
+      border-radius: 24px;
+      overflow:hidden;
+    }
+
+    footer{
+      text-align:center;
+      padding:18px 6px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    /* modal styles */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(10,20,30,0.35);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:50;
+      padding:24px;
+    }
+    .modal{
+      background:var(--white);
+      border-radius:20px;
+      max-width:900px;
+      width:100%;
+      padding:20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      max-height:90vh;
+      overflow:auto;
+    }
+    .modal h2{ margin:0 0 8px 0; font-size:20px; }
+    .modal .close{
+      background:none;border:none;font-size:18px;cursor:pointer;
+    }
+
+    /* schedule grid */
+    .week-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .day-card{
+      background:#FBFEFF;
+      border-radius:14px;
+      padding:12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.03);
+    }
+    .day-card label{ display:block; font-weight:600; margin-bottom:6px; }
+    .day-card input[type="text"]{
+      width:100%;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(0,0,0,0.06);
+      font-size:14px;
+      margin-bottom:8px;
+      box-sizing:border-box;
+    }
+    .day-card small{ color:var(--muted); display:block; font-size:12px; margin-bottom:6px; }
+    .day-card textarea{
+      width:100%;
+      min-height:56px;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid rgba(0,0,0,0.06);
+      resize:vertical;
+      font-family:inherit;
+    }
+
+    .modal-footer{
+      display:flex;
+      gap:12px;
+      justify-content:flex-end;
+      margin-top:14px;
+    }
+
+    /* chatbot area */
+    .chat-window{
+      border-radius:12px;
+      padding:12px;
+      background:linear-gradient(180deg,#FBFEFF,#F4FAFD);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+      min-height:200px;
+    }
+    .messages{ max-height:320px; overflow:auto; display:flex; flex-direction:column; gap:8px; padding:6px; }
+    .msg{ max-width:78%; padding:8px 12px; border-radius:14px; font-size:15px; }
+    .msg.user{ align-self:flex-end; background:var(--green); color:#1a1a1a; border-bottom-right-radius:6px; }
+    .msg.bot{ align-self:flex-start; background:var(--white); color:var(--text); border:1px solid rgba(0,0,0,0.04); }
+
+    .chat-controls{
+      display:flex; gap:8px; margin-top:10px;
+    }
+    .chat-controls input[type="text"]{
+      flex:1; padding:10px 12px; border-radius:12px; border:1px solid rgba(0,0,0,0.08);
+    }
+    .small{ font-size:13px; color:var(--muted); }
+
+    /* responsive */
+    @media (max-width:900px){
+      .card{ flex-direction:column; gap:18px; align-items:stretch; padding:18px; }
+      .visual{ max-width:100%; }
+      h1{ font-size:36px; }
+      .week-grid{ grid-template-columns:1fr; }
+    }
+
+    /* subtle float animation for background icons */
+    @keyframes floaty {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0px); }
+    }
+    .floaty{ animation: floaty 4s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+  <div class="bg-icons" aria-hidden="true"></div>
+
+  <main class="container" role="main">
+    <div class="card">
+      <div class="left">
+        <div class="logo" aria-hidden="true">
+          <!-- simple bag+book logo SVG -->
+          <svg viewBox="0 0 64 64" role="img" aria-label="Akıllı Çanta Asistanı logo">
+            <g fill="none" fill-rule="evenodd">
+              <rect x="6" y="14" width="52" height="40" rx="10" fill="#FFBC70"/>
+              <rect x="14" y="20" width="36" height="26" rx="6" fill="#BFE3B4"/>
+              <path d="M22 18c0-4 3.2-8 10-8s10 4 10 8" stroke="#133046" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="26" y="28" width="12" height="2" rx="1" fill="#FFF"/>
+            </g>
+          </svg>
+          <div>
+            <div style="font-weight:700; font-size:18px;">Akıllı Çanta Asistanı</div>
+            <div style="font-size:13px;color:var(--muted);">Smart Bag Buddy / Ders Dostum</div>
+          </div>
+        </div>
+
+        <h1>Hoş geldin!</h1>
+        <p class="lead">Akıllı Çanta Asistanı ile bugünkü derslerini ve gerekli eşyalarını kolayca öğren.</p>
+
+        <div class="actions" role="navigation" aria-label="Ana eylemler">
+          <button class="btn green" id="openScheduleBtn" aria-haspopup="dialog" aria-controls="scheduleModal">
+            <!-- book icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="#333" d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-16H6.5A2.5 2.5 0 0 0 4 7.5v12zM2 4h14v2H2z"/>
+            </svg>
+            Ders Programını Oluştur
+          </button>
+
+          <button class="btn orange" id="openChatBtn" aria-haspopup="dialog" aria-controls="chatModal">
+            <!-- chat icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="#333" d="M12 3a9 9 0 0 0-7.07 15.36L3 21l2.64-1.93A9 9 0 1 0 12 3z"/>
+            </svg>
+            Chatbot ile Konuş
+          </button>
+        </div>
+
+        <div class="wave-footer" role="contentinfo" aria-label="footer görsel">
+          <!-- decorative wave -->
+          <svg viewBox="0 0 1200 80" preserveAspectRatio="none" width="100%" height="60" style="display:block">
+            <path d="M0,40 C200,90 400,0 600,40 C800,80 1000,10 1200,40 L1200,80 L0,80 Z" fill="#FFFFFF" opacity="0.95"></path>
+          </svg>
+        </div>
+
+        <footer>© 2025 Akıllı Çanta Asistanı – Öğrencilerin en renkli yardımcısı!</footer>
+      </div>
+
+      <div class="visual" aria-hidden="true">
+        <div class="character floaty" aria-hidden="true">
+          <div class="character-illustration" role="img" aria-label="Öğrenci karakteri">
+            <!-- simple cartoon student SVG -->
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0" stop-color="#FFD6A5"/>
+                  <stop offset="1" stop-color="#FFBC70"/>
+                </linearGradient>
+              </defs>
+              <g transform="translate(10,6)">
+                <ellipse cx="90" cy="146" rx="60" ry="12" fill="rgba(0,0,0,0.06)"/>
+                <path d="M60 54c0-16 12-28 30-28s30 12 30 28v18H60z" fill="#FFD6A5" />
+                <path d="M64 72c-8 0-12 8-12 14v20h76v-20c0-6-4-14-12-14H64z" fill="#FFF"/>
+                <circle cx="90" cy="56" r="28" fill="#F6C9A7"/>
+                <path d="M80 50c3 2 5 2 10 2s7 0 10-2" stroke="#4B2F2F" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <path d="M78 64c3 2 6 3 6 3s4-1 6-3" stroke="#4B2F2F" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <rect x="52" y="88" width="76" height="50" rx="12" fill="#BFE3B4"/>
+                <path d="M58 92c0-8 6-14 14-14h36c8 0 14 6 14 14" fill="none" stroke="#2F5A4D" stroke-width="2" stroke-linecap="round"/>
+              </g>
+            </svg>
+            <div class="shadow" aria-hidden="true"></div>
+          </div>
+
+          <div class="speech" aria-hidden="true">Bugünkü ders programında ne var?</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Schedule Modal -->
+  <div class="modal-backdrop" id="scheduleModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="scheduleTitle">
+    <div class="modal" role="document">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <h2 id="scheduleTitle">Ders Programını Oluştur</h2>
+        <div>
+          <button class="close" id="closeSchedule" aria-label="Kapat">Kapat</button>
+        </div>
+      </div>
+
+      <p class="small">Her güne dersleri virgülle ayırarak yazabilirsiniz. Örnek: Türkçe, Matematik, Fen</p>
+
+      <form id="scheduleForm" autocomplete="off">
+        <div class="week-grid" id="weekGrid">
+          <!-- JS ile doldurulacak -->
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn" id="loadSample">Örnek Doldur</button>
+          <button type="button" class="btn" id="clearSchedule">Temizle</button>
+          <button type="submit" class="btn green">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Chat Modal -->
+  <div class="modal-backdrop" id="chatModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="chatTitle">
+    <div class="modal" role="document">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <h2 id="chatTitle">Chatbot</h2>
+        <div>
+          <button class="close" id="closeChat" aria-label="Kapat">Kapat</button>
+        </div>
+      </div>
+
+      <p class="small">Aşağıya sorunu yaz. Örnek: "Bugün hangi dersim var?" veya "Bugün ne almalıyım?"</p>
+
+      <div class="chat-window" aria-live="polite">
+        <div class="messages" id="messages" role="log" aria-atomic="false">
+          <!-- messages -->
+        </div>
+
+        <div class="chat-controls" style="margin-top:8px;">
+          <input type="text" id="chatInput" placeholder="Sorunu yaz..." aria-label="Chat giriş" />
+          <button class="btn orange" id="sendChat">Gönder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Utility & initial data ---
+    const weekdays = ["Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi","Pazar"];
+    const scheduleKey = 'akilliCanta_schedule_v1';
+
+    // mapping ders => öneri (genel, küçük harfe göre)
+    const itemSuggestions = {
+      'matematik': ['Matematik kitabını', 'Matematik defterini', 'Kalem ve silgiyi'],
+      'turkçe': ['Türkçe defterini', 'Türkçe kitabını'],
+      'türkçe': ['Türkçe defterini', 'Türkçe kitabını'],
+      'fen': ['Fen kitabını', 'Fen defterini', 'Kalemleri'],
+      'fen bilgisi': ['Fen kitabını', 'Fen defterini'],
+      'beden': ['Beden eğitimi kıyafetini', 'Spor ayakkabılarını'],
+      'resim': ['Resim defterini', 'Boya kalemlerini', 'Kurşun kalemi'],
+      'muzik': ['Müzik not defterini', 'Enstrüman varsa getir'],
+      'ingilizce': ['İngilizce defterini', 'İngilizce kitabını'],
+      'sosyal': ['Sosyal bilgiler defteri', 'Harita veya materyal gerekebilir'],
+      'hayat bilgisi': ['Defter ve kalemi'],
+      'din kültürü': ['Defter ve kitap'],
+      'bilgisayar': ['Bilgisayar dersi için ödevlerini hazırla'],
+      // defaults
+      'default': ['Defterini', 'Kalemlerini', 'İlgili ders kitabını']
+    };
+
+    // --- DOM references ---
+    const scheduleModal = document.getElementById('scheduleModal');
+    const chatModal = document.getElementById('chatModal');
+    const openScheduleBtn = document.getElementById('openScheduleBtn');
+    const closeSchedule = document.getElementById('closeSchedule');
+    const openChatBtn = document.getElementById('openChatBtn');
+    const closeChat = document.getElementById('closeChat');
+    const weekGrid = document.getElementById('weekGrid');
+    const scheduleForm = document.getElementById('scheduleForm');
+    const loadSampleBtn = document.getElementById('loadSample');
+    const clearScheduleBtn = document.getElementById('clearSchedule');
+
+    const messages = document.getElementById('messages');
+    const chatInput = document.getElementById('chatInput');
+    const sendChat = document.getElementById('sendChat');
+
+    // render day inputs
+    function renderWeekInputs(data = {}) {
+      weekGrid.innerHTML = '';
+      weekdays.forEach(day => {
+        const value = data[day] || '';
+        const div = document.createElement('div');
+        div.className = 'day-card';
+        div.innerHTML = `
+          <label for="day-${day}">${day}</label>
+          <small>Gün içerisindeki dersleri virgülle ayırın.</small>
+          <textarea id="day-${day}" name="${day}" placeholder="Örnek: Türkçe, Matematik, Fen">${value}</textarea>
+        `;
+        weekGrid.appendChild(div);
+      });
+    }
+
+    // load schedule from storage
+    function loadSchedule(){
+      try {
+        const raw = localStorage.getItem(scheduleKey);
+        if (!raw) return {};
+        return JSON.parse(raw);
+      } catch(e){ return {}; }
+    }
+
+    // save schedule to storage
+    function saveSchedule(obj){
+      localStorage.setItem(scheduleKey, JSON.stringify(obj));
+    }
+
+    // open/close modals
+    function openModal(modal){
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden','false');
+      // focus first input
+      const firstInput = modal.querySelector('textarea, input[type="text"]');
+      if(firstInput) firstInput.focus();
+    }
+    function closeModal(modal){
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
+    }
+
+    // sample data
+    const sample = {
+      "Pazartesi": "Türkçe, Matematik, Fen",
+      "Salı": "Sosyal, İngilizce",
+      "Çarşamba": "Matematik, Resim",
+      "Perşembe": "Fen, Beden",
+      "Cuma": "Türkçe, Bilgisayar",
+      "Cumartesi": "",
+      "Pazar": ""
+    };
+
+    // initial render
+    document.addEventListener('DOMContentLoaded', () => {
+      const data = loadSchedule();
+      if(Object.keys(data).length === 0){
+        renderWeekInputs({});
+      } else {
+        renderWeekInputs(data);
+      }
+    });
+
+    // modal event handlers
+    openScheduleBtn.addEventListener('click', () => {
+      const data = loadSchedule();
+      renderWeekInputs(data);
+      openModal(scheduleModal);
+    });
+    closeSchedule.addEventListener('click', () => closeModal(scheduleModal));
+
+    loadSampleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      renderWeekInputs(sample);
+    });
+
+    clearScheduleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      renderWeekInputs({});
+    });
+
+    scheduleForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(scheduleForm);
+      const obj = {};
+      weekdays.forEach(day => {
+        const raw = formData.get(day) || '';
+        // normalize spaces, remove trailing commas
+        const normalized = raw.split(',').map(s => s.trim()).filter(Boolean).join(', ');
+        obj[day] = normalized;
+      });
+      saveSchedule(obj);
+      alert('Ders programı kaydedildi.');
+      closeModal(scheduleModal);
+    });
+
+    // Chat modal
+    openChatBtn.addEventListener('click', () => {
+      openModal(chatModal);
+      messages.innerHTML = '';
+      botMessage('Merhaba! Sorunu yazabilirsin. Örnek: "Bugün hangi dersim var?" veya "Bugün ne almalıyım?"');
+    });
+    closeChat.addEventListener('click', () => closeModal(chatModal));
+
+    // simple helper: get today's name in Turkish
+    function getTurkishToday(){
+      const d = new Date();
+      const idx = d.getDay(); // 0 = Sunday
+      // mapping: 0=Pazar,1=Pazartesi...
+      const map = ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+      return map[idx];
+    }
+
+    // generate suggestions for a list of lessons
+    function suggestionsForLessons(lessons){
+      const low = lessons.map(s => s.toLowerCase());
+      const suggestions = [];
+      low.forEach(les => {
+        // for each known keyword in itemSuggestions, if included in lesson string -> add
+        let matched = false;
+        for(const key in itemSuggestions){
+          if(key === 'default') continue;
+          if(les.includes(key)){
+            matched = true;
+            itemSuggestions[key].forEach(it => suggestions.push(it));
+          }
+        }
+        if(!matched){
+          itemSuggestions['default'].forEach(it => suggestions.push(it));
+        }
+      });
+      // deduplicate keeping order
+      return [...new Set(suggestions)];
+    }
+
+    function userMessage(text){
+      const div = document.createElement('div');
+      div.className = 'msg user';
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+    function botMessage(text){
+      const div = document.createElement('div');
+      div.className = 'msg bot';
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    sendChat.addEventListener('click', handleChat);
+    chatInput.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') {
+        e.preventDefault();
+        handleChat();
+      }
+    });
+
+    function handleChat(){
+      const text = chatInput.value.trim();
+      if(!text) return;
+      userMessage(text);
+      chatInput.value = '';
+      // simple intent matching
+      const t = text.toLowerCase();
+      const schedule = loadSchedule();
+      // if user asks about today's lessons
+      if(t.includes('hangi ders') || t.includes('hangi dersim') || t.includes('bugün hangi ders')){
+        const today = getTurkishToday();
+        const todays = (schedule[today] || '').trim();
+        if(todays){
+          botMessage(`Bugün ${today} dersleri: ${todays}.`);
+        } else {
+          botMessage(`Bugün için kayıtlı ders yok. Ders programını oluşturmak istersen "Ders Programını Oluştur" butonunu kullanabilirsin.`);
+        }
+        return;
+      }
+      // ask about what to take today
+      if(t.includes('ne almalıyım') || t.includes('ne almalıyım?') || t.includes('bugün ne al') || t.includes('bugun ne al')){
+        const today = getTurkishToday();
+        const todays = (schedule[today] || '').trim();
+        if(todays){
+          const lessons = todays.split(',').map(s => s.trim()).filter(Boolean);
+          if(lessons.length === 0){
+            botMessage('Bugün için kaydedilmiş ders yok. Program oluşturduktan sonra tekrar sorabilirsin.');
+            return;
+          }
+          const sugests = suggestionsForLessons(lessons);
+          botMessage(`Bugün ${today} derslerin: ${lessons.join(', ')}. Alman gerekenler: ${sugests.join(', ')}.`);
+        } else {
+          botMessage('Bugün için kayıtlı ders yok. Ders programını oluşturduktan sonra tekrar sorabilirsin.');
+        }
+        return;
+      }
+
+      // ask for a specific day: "Pazartesi ne var?"
+      for(const day of weekdays){
+        if(t.includes(day.toLowerCase())){
+          const s = schedule[day] || '';
+          if(s) botMessage(`${day} dersleri: ${s}.`);
+          else botMessage(`${day} için kayıtlı ders yok.`);
+          return;
+        }
+      }
+
+      // fallback: attempt to answer by scanning schedule for a lesson
+      // e.g., "Matematik için ne almalıyım?"
+      // find lesson keyword present in message
+      let foundLesson = null;
+      for(const key in itemSuggestions){
+        if(key === 'default') continue;
+        if(t.includes(key)){
+          foundLesson = key;
+          break;
+        }
+      }
+      if(foundLesson){
+        botMessage(`${foundLesson} dersi için öneriler: ${itemSuggestions[foundLesson].join(', ')}.`);
+        return;
+      }
+
+      // default fallback
+      botMessage('Üzgünüm, bu soruyu tam anlayamadım. Örnek sorular: "Bugün hangi dersim var?" veya "Bugün ne almalıyım?"');
+    }
+
+    // close modal on backdrop click
+    document.querySelectorAll('.modal-backdrop').forEach(back => {
+      back.addEventListener('click', (ev) => {
+        if(ev.target === back){
+          closeModal(back);
+        }
+      });
+    });
+
+    // keyboard escape to close
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape'){
+        document.querySelectorAll('.modal-backdrop').forEach(back => closeModal(back));
+      }
+    });
+
+    // ensure there is an initial sample schedule in storage for first-time users (non-destructive)
+    (function ensureSampleIfEmpty(){
+      const s = loadSchedule();
+      if(Object.keys(s).length === 0){
+        saveSchedule(sample);
+      }
+    })();
+
+  </script>
+</body>
+</html>
